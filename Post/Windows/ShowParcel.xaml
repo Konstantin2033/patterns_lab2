@@ -1,0 +1,35 @@
+﻿<Window x:Name="ShowParcelWindow" x:Class="Post.ShowParcel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Post"
+        mc:Ignorable="d"
+        Title="Post Tracking" Height="500" Width="800"
+        MaxHeight="500" MaxWidth="800"
+        MinHeight="500" MinWidth="800" ResizeMode="NoResize">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF834EE9"/>
+            <GradientStop Color="#FFCBB0FF" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid>
+        <Rectangle Margin="0,121,0,0" Fill="#FF9537C5" HorizontalAlignment="Center" Width="800"/>
+        <Label Content="Твоя Пошта" HorizontalAlignment="Right" Margin="0,0,364,368" VerticalAlignment="Bottom" FontSize="72" FontWeight="Bold" Foreground="White"/>
+        <ListBox x:Name="checkPointsListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,150,309,0" Height="324" VerticalAlignment="Top" HorizontalAlignment="Right" Width="481" Background="#FF8D5BEC" Foreground="White" FontSize="20">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Time, StringFormat={}{0:dd.MM.yyyy}}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Description}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Label x:Name="InfoLabelShowParcel" Content="Label" HorizontalAlignment="Left" Margin="511,227,0,0" VerticalAlignment="Top" Foreground="White" FontSize="14" FontWeight="Bold" Height="167" Width="250"/>
+        <Button x:Name="ButtonCloseShowParcel" Content="Закрити" Margin="591,399,0,0" Background="White" FontSize="24" FontWeight="Bold" Height="44" VerticalAlignment="Top" HorizontalAlignment="Left" Width="170" Click="ButtonCloseShowParcel_Click"/>
+        <Label x:Name="NameShowParcel" Content="Label" HorizontalAlignment="Left" Margin="511,150,0,0" VerticalAlignment="Top" Foreground="White" FontSize="18" FontWeight="Bold" Height="72" Width="250"/>
+
+    </Grid>
+</Window>
