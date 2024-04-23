@@ -3,6 +3,10 @@ The program emulates transportation of parcels with tracking via unique tracking
 For saving information used Sql database and class-adapter for acsessing tables.
 In the program realised system of users through personal accounts, where several parcels can be linked to one user.
 
+**Process**
+You start with main window, where you can write down your tracing code and find your parcel, or authorize to your account and check all your parcels. If you dont have accoun you can create one. In account menu you can create new parcels or delete old ones. Also you canpick any of your parcles and check detail info about sender, reciver, time and type of parcel. Also there are checkpoint with date and tine to know location of your parcel.
+Without authorisation you can find a parcel by tracking code, but you wont be allowed do delete it.
+
 [Directory](Post/Classes) with classes
 
 The **KISS** principle. All classes written in the same way, with initialization and get/set methods. All variable have clear and understandable names, every utilized element of the forms also has proper name with main form name mentioning.
