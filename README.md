@@ -9,7 +9,7 @@ The **KISS** principle. All classes written in the same way, with initialization
 [Check point class](Post/Classes/CheckPoint.cs)
 [User class](Post/Classes/User.cs)
 [Parcel class](Post/Classes/Parcel.cs)
-[Database class]Post/Classes/DataBaseAdapter.cs)
+[Database class](Post/Classes/DataBaseAdapter.cs)
 
 **Yagni** stands for awoiding functions, that you don't need yet.
 All function and variables in the project are utilized. There are no unnecessary methods or classes.
