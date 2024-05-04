@@ -22,3 +22,14 @@ The **DRY** principle grounds on awoiding repeating parts of code in your projec
 As example in the project there are static Warning class to show a message on screen. You can acsses this class at every point of the program, in every form and class.
 With this class there is no need to call message.show() ever time.
 [Warning class](Post/Classes/Warning.cs)
+
+
+**Used design patterns**
+
+**Mediator pattern**
+To check all the input boxes in Login window used a mediator patter with class [RegistrationMediator](Post/Classes/RegistrationMediator.cs)
+This class checks input field to enable "continue" button.
+
+**Adapter pattern**
+In the project you can find a adapter for SQL database, that has no suitable interface in C# to work with. Basic functional methods are used to access tables and even each rows. The database adapter can be easly used as a template for other projects with minor changes in table data. 
+[Database class](Post/Classes/DataBaseAdapter.cs)
