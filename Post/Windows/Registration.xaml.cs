@@ -22,47 +22,58 @@ namespace Post.Windows
     /// </summary>
     public partial class Registration : Window
     {
-        private bool login = false;
-        private bool firstPassword = false;
-        private bool secondPassword = false;
-        private bool name = false;
-        private bool secondName = false;
+        private RegistrationMediator mediator;
         private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
         private Window previousWindow;
         public Registration(Window previousWindow)
         {
             InitializeComponent();
+            mediator = new RegistrationMediator(this);
             this.previousWindow = previousWindow;
+            ButtonRegister.IsEnabled = false;
         }
 
-        private void InputLoginRegister_GotFocus(object sender, RoutedEventArgs e)
+        public void EnableRegisterButton() { ButtonRegister.IsEnabled = true; }
+        public void DisableRegisterButton() { ButtonRegister.IsEnabled = false; }
+
+
+        private void InputLoginRegister_GotFocus(object sender, RoutedEventArgs e) { InputLoginRegister.Text = string.Empty; }
+        private void InputPasswordRegister_GotFocus(object sender, RoutedEventArgs e){InputPasswordRegister.Text = string.Empty;}
+        private void InputSecondPasswordRegister_GotFocus(object sender, RoutedEventArgs e){InputSecondPasswordRegister.Text = string.Empty;}
+        private void InputNameRegister_GotFocus(object sender, RoutedEventArgs e){InputNameRegister.Text = string.Empty;}
+        private void InputLastNameRegister_GotFocus(object sender, RoutedEventArgs e){InputLastNameRegister.Text = string.Empty;}
+
+
+        private void InputLoginRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputLoginRegister.Text = string.Empty;
+            if (InputLoginRegister.Text != "" && InputLoginRegister.Text != "Логін") { mediator.NotifyLoginChanged(true); }
         }
 
-        private void InputPasswordRegister_GotFocus(object sender, RoutedEventArgs e)
+        private void InputPasswordRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputPasswordRegister.Text = string.Empty;
+            if (InputPasswordRegister.Text != "" && InputPasswordRegister.Text != "Пароль") { mediator.NotifyFirstPasswordChanged(true); }
         }
 
-        private void InputSecondPasswordRegister_GotFocus(object sender, RoutedEventArgs e)
+        private void InputLastNameRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputSecondPasswordRegister.Text = string.Empty;
+            if (InputLastNameRegister.Text != "" && InputLastNameRegister.Text != "Прізвище") { mediator.NotifySecondNameChanged(true); }
         }
 
-        private void InputNameRegister_GotFocus(object sender, RoutedEventArgs e)
+        private void InputSecondPasswordRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputNameRegister.Text = string.Empty;
+            if (InputSecondPasswordRegister.Text != "" && InputSecondPasswordRegister.Text != "Повторіть пароль") { mediator.NotifySecondPasswordChanged(true); }
         }
 
-        private void InputLastNameRegister_GotFocus(object sender, RoutedEventArgs e)
+        private void InputNameRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            InputLastNameRegister.Text = string.Empty;
+            if (InputNameRegister.Text != "" && InputNameRegister.Text != "Ім'я") { mediator.NotifyNameChanged(true); }
         }
+
+
 
         private void ButtonRegister_Click(object sender, RoutedEventArgs e)
         {
-            if (login && firstPassword && secondPassword && name && secondName)
+            if (ButtonRegister.IsEnabled)
             {
                 if (InputPasswordRegister.Text != InputSecondPasswordRegister.Text)
                 {
@@ -87,30 +98,7 @@ namespace Post.Windows
             }
         }
 
-        private void InputLoginRegister_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (InputLoginRegister.Text != "" && InputLoginRegister.Text != "Логін") { login = true; }
-        }
-
-        private void InputPasswordRegister_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (InputPasswordRegister.Text != "" && InputPasswordRegister.Text != "Пароль") { firstPassword = true; }
-        }
-
-        private void InputLastNameRegister_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (InputLastNameRegister.Text != "" && InputLastNameRegister.Text != "Прізвище") { secondPassword = true; }
-        }
-
-        private void InputSecondPasswordRegister_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (InputSecondPasswordRegister.Text != "" && InputSecondPasswordRegister.Text != "Повторіть пароль") { name = true; }
-        }
-
-        private void InputNameRegister_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (InputNameRegister.Text != "" && InputNameRegister.Text != "Ім'я") { secondName = true; }
-        }
+        
 
         private void ButtonBackRegister_Click(object sender, RoutedEventArgs e)
         {
