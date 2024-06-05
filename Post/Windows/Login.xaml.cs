@@ -1,18 +1,7 @@
 ﻿using Post.Classes;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Post.Repositories;
 
 namespace Post.Windows
 {
@@ -21,7 +10,9 @@ namespace Post.Windows
     /// </summary>
     public partial class Login : Window
     {
-        private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
+        static string connectionString = ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString;
+        UserRepository userRepository = new UserRepository(connectionString, new ParcelRepository(connectionString, new CheckPointRepository(connectionString)));
+        
         public Login()
         {
             InitializeComponent();
@@ -42,7 +33,7 @@ namespace Post.Windows
             string Login = InputLogin.Text;
             string Password = InputPassword.Text;
 
-            List<User>users = dataBase.GetAllUsers();
+            List<User>users = userRepository.GetAllUsers();
 
             if (users != null)
             {

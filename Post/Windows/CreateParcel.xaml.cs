@@ -1,52 +1,44 @@
 ﻿using Post.Classes;
-using System;
-using System.Collections.Generic;
+using Post.Repositories;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Post.Windows
 {
-    /// <summary>
-    /// Interaction logic for CreateParcel.xaml
-    /// </summary>
     public partial class CreateParcel : Window
     {
         private bool name = false;
         private bool description = false;
         private bool recipient = false;
-        private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
+        private ParcelRepository parcelRepository;
         private User user;
         private Window previousWindow;
+        private CheckPointRepository checkPointRepository;
+
         public CreateParcel(User user, Window previousWindow)
         {
             InitializeComponent();
             this.user = user;
             this.previousWindow = previousWindow;
+            string connectionString = ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString;
+            parcelRepository = new ParcelRepository(connectionString, new CheckPointRepository(connectionString));
+            checkPointRepository = new CheckPointRepository(connectionString);
         }
 
         private void InputRecipient_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (InputRecipient.Text != "" && InputRecipient.Text != "Логін") { recipient = true; }
+            if (!string.IsNullOrWhiteSpace(InputRecipient.Text) && InputRecipient.Text != "Recipient") { recipient = true; }
         }
 
         private void InputParcelName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (InputParcelName.Text != "" && InputParcelName.Text != "Логін") { name = true; }
+            if (!string.IsNullOrWhiteSpace(InputParcelName.Text) && InputParcelName.Text != "Parcel Name") { name = true; }
         }
 
         private void InputDescription_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (InputDescription.Text != "" && InputDescription.Text != "Логін") { description = true; }
+            if (!string.IsNullOrWhiteSpace(InputDescription.Text) && InputDescription.Text != "Description") { description = true; }
         }
 
         private void InputRecipient_GotFocus(object sender, RoutedEventArgs e)
@@ -68,33 +60,36 @@ namespace Post.Windows
         {
             if (name && description && recipient)
             {
-                string number = RandomtNumber();
-                
-                Parcel parcel = new Parcel(0,user.Id, number, InputParcelName.Text,InputDescription.Text,InputRecipient.Text,DateTime.Now,null,null,false);
-                dataBase.AddParsel(parcel);
+                string number = RandomNumber();
+
+                Parcel parcel = new Parcel(0, user.Id, number, InputParcelName.Text, InputDescription.Text, InputRecipient.Text, DateTime.Now, null, null, false);
+                parcelRepository.AddParcel(parcel);
 
                 List<CheckPoint> checkPoints = new List<CheckPoint>();
-                checkPoints.Add(new CheckPoint(dataBase.GetAllParcels().Find(par => par.Number == number).Id,"Створення посилки",DateTime.Now));
-                checkPoints.Add(new CheckPoint(dataBase.GetAllParcels().Find(par => par.Number == number).Id, "Посилка очікує відправлення", DateTime.Now));
+                checkPoints.Add(new CheckPoint(parcel.Id, "Creation of the parcel", DateTime.Now));
+                checkPoints.Add(new CheckPoint(parcel.Id, "Parcel waiting for dispatch", DateTime.Now));
+
                 foreach (CheckPoint checkPoint in checkPoints)
                 {
-                    dataBase.AddCheckPoint(checkPoint);
+                    checkPointRepository.AddCheckPoint(checkPoint);
                 }
-                Warning.ShowMessage("Посилку створено!");
-                
+
+                Warning.ShowMessage("Parcel created!");
+
                 previousWindow.Show();
                 Close();
             }
             else
             {
-                Warning.ShowMessage("Поля не заповнені");
+                Warning.ShowMessage("Fields are not filled");
             }
         }
-        private string RandomtNumber()
+
+        private string RandomNumber()
         {
             Random random = new Random();
             string number = "";
-            for(int i = 0; i < 12; i++) { number += random.Next(10).ToString(); }
+            for (int i = 0; i < 12; i++) { number += random.Next(10).ToString(); }
             return number;
         }
 
