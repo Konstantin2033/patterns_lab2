@@ -1,19 +1,8 @@
 ﻿using Post.Classes;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Xml.Linq;
+using Post.Repositories;
 
 namespace Post.Windows
 {
@@ -23,8 +12,10 @@ namespace Post.Windows
     public partial class Registration : Window
     {
         private RegistrationMediator mediator;
-        private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
-        private Window previousWindow;
+        static string connectionString = ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString;
+        private UserRepository userRepository = new UserRepository(connectionString, new ParcelRepository(connectionString, new CheckPointRepository(connectionString)));
+         private Window previousWindow;
+
         public Registration(Window previousWindow)
         {
             InitializeComponent();
@@ -35,7 +26,6 @@ namespace Post.Windows
 
         public void EnableRegisterButton() { ButtonRegister.IsEnabled = true; }
         public void DisableRegisterButton() { ButtonRegister.IsEnabled = false; }
-
 
         private void InputLoginRegister_GotFocus(object sender, RoutedEventArgs e) { InputLoginRegister.Text = string.Empty; }
         private void InputPasswordRegister_GotFocus(object sender, RoutedEventArgs e){InputPasswordRegister.Text = string.Empty;}
@@ -69,8 +59,6 @@ namespace Post.Windows
             if (InputNameRegister.Text != "" && InputNameRegister.Text != "Ім'я") { mediator.NotifyNameChanged(true); }
         }
 
-
-
         private void ButtonRegister_Click(object sender, RoutedEventArgs e)
         {
             if (ButtonRegister.IsEnabled)
@@ -84,7 +72,7 @@ namespace Post.Windows
                 {
                     User user = new User(0, InputNameRegister.Text, InputLastNameRegister.Text,
                         InputLoginRegister.Text, InputPasswordRegister.Text, null);
-                    dataBase.AddUser(user);
+                    userRepository.AddUser(user);
                     Warning.ShowMessage("Акаунт створено!");
                     MainWindow mainWindow = new MainWindow();
                     mainWindow.Show();
@@ -97,8 +85,6 @@ namespace Post.Windows
                 return;
             }
         }
-
-        
 
         private void ButtonBackRegister_Click(object sender, RoutedEventArgs e)
         {

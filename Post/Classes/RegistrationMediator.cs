@@ -1,66 +1,66 @@
 ﻿using Post.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Post.Classes
 {
     public class RegistrationMediator
     {
-        private bool login = false;
-        private bool firstPassword = false;
-        private bool secondPassword = false;
-        private bool name = false;
-        private bool secondName = false;
-
-        private Registration _registration;
+        private readonly Registration _registration;
+        private bool _isLoginValid;
+        private bool _isFirstPasswordValid;
+        private bool _isSecondPasswordValid;
+        private bool _isNameValid;
+        private bool _isSecondNameValid;
 
         public RegistrationMediator(Registration registration)
         {
             _registration = registration;
         }
 
-        public void NotifyLoginChanged(bool value)
+        public void NotifyLoginChanged(bool isValid)
         {
-            login = value;
-            CheckFields();
+            _isLoginValid = isValid;
+            CheckAndUpdateButtonState();
         }
 
-        public void NotifyFirstPasswordChanged(bool value)
+        public void NotifyFirstPasswordChanged(bool isValid)
         {
-            firstPassword = value;
-            CheckFields();
+            _isFirstPasswordValid = isValid;
+            CheckAndUpdateButtonState();
         }
 
-        public void NotifySecondPasswordChanged(bool value)
+        public void NotifySecondPasswordChanged(bool isValid)
         {
-            secondPassword = value;
-            CheckFields();
+            _isSecondPasswordValid = isValid;
+            CheckAndUpdateButtonState();
         }
 
-        public void NotifyNameChanged(bool value)
+        public void NotifyNameChanged(bool isValid)
         {
-            name = value;
-            CheckFields();
+            _isNameValid = isValid;
+            CheckAndUpdateButtonState();
         }
 
-        public void NotifySecondNameChanged(bool value)
+        public void NotifySecondNameChanged(bool isValid)
         {
-            secondName = value;
-            CheckFields();
+            _isSecondNameValid = isValid;
+            CheckAndUpdateButtonState();
         }
 
-        private void CheckFields()
+        private void CheckAndUpdateButtonState()
         {
-            if (login && firstPassword && secondPassword && name && secondName &&
+            bool areAllFieldsValid =
+                _isLoginValid &&
+                _isFirstPasswordValid &&
+                _isSecondPasswordValid &&
+                _isNameValid &&
+                _isSecondNameValid &&
                 !string.IsNullOrEmpty(_registration.InputLoginRegister.Text) &&
                 !string.IsNullOrEmpty(_registration.InputPasswordRegister.Text) &&
                 !string.IsNullOrEmpty(_registration.InputSecondPasswordRegister.Text) &&
                 !string.IsNullOrEmpty(_registration.InputNameRegister.Text) &&
-                !string.IsNullOrEmpty(_registration.InputLastNameRegister.Text))
+                !string.IsNullOrEmpty(_registration.InputLastNameRegister.Text);
+
+            if (areAllFieldsValid)
             {
                 _registration.EnableRegisterButton();
             }

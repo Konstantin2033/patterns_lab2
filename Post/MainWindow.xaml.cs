@@ -1,16 +1,9 @@
 ﻿using System.Configuration;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Post.Classes;
+using Post.Repositories;
 using Post.Windows;
 
 namespace Post
@@ -20,7 +13,10 @@ namespace Post
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
+        private DatabaseAdapter dataBase = new DatabaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
+        static string connectionString = ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString;
+        static CheckPointRepository checkPointRepository = new CheckPointRepository(connectionString);
+        ParcelRepository parcelRepository = new ParcelRepository(connectionString, checkPointRepository);
         public MainWindow()
         {
             InitializeComponent();
@@ -41,7 +37,6 @@ namespace Post
 
         private void ButtonSubmitTrackCode_Click(object sender, RoutedEventArgs e)
         {
- 
             if (string.IsNullOrWhiteSpace(InputTrackCode.Text))
             {
                 Warning.ShowMessage("Введіть код");
@@ -59,11 +54,11 @@ namespace Post
             }
             else
             {
-                List<Parcel> parcels = dataBase.GetAllParcels();
+                List<Parcel> parcels = ParcelRepository.GetAllParcels();
 
                 if (parcels != null && parcels.Count > 0)
                 {
-                    Parcel parcel = parcels.Find(parcelTMP => parcelTMP.Number == InputTrackCode.Text);
+                    Parcel parcel = parcels.Find(p => p.Number == InputTrackCode.Text);
                     if (parcel != null)
                     {
                         ShowParcel showParcel = new ShowParcel(parcel);

@@ -1,50 +1,74 @@
 ﻿using Post.Classes;
-using System;
-using System.Collections.Generic;
+using Post.Repositories;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Post.Windows
 {
-    /// <summary>
-    /// Interaction logic for Account.xaml
-    /// </summary>
     public partial class Account : Window
     {
-        private DataBaseAdapter dataBase = new DataBaseAdapter(ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString);
+        private ParcelRepository parcelRepository;
         private User user;
+
         public Account(User user)
         {
             InitializeComponent();
             this.user = user;
-            updateParcels();
+            string connectionString = ConfigurationManager.ConnectionStrings["PostBase"].ConnectionString;
+            CheckPointRepository checkPointRepository = new CheckPointRepository(connectionString);
+            parcelRepository = new ParcelRepository(connectionString, checkPointRepository);
+            UpdateParcelsList();
         }
-        public void updateParcels()
+
+        private void UpdateParcelsList(string searchText = "", string sortField = "Id", bool sortAscending = true)
         {
-            List<Parcel> parcels = dataBase.GetAllParcels().FindAll(parcel => parcel.UserId == user.Id);
-            if (parcels != null)
+            try
             {
+                List<Parcel> parcels = parcelRepository.GetAllParcels().FindAll(parcel => parcel.UserId == user.Id);
+
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    parcels = parcels.Where(p => p.Number.Contains(searchText) || p.Name.Contains(searchText)).ToList();
+                }
+
+                switch (sortField)
+                {
+                    case "Number":
+                        parcels = sortAscending ? parcels.OrderBy(p => p.Number).ToList() : parcels.OrderByDescending(p => p.Number).ToList();
+                        break;
+                    case "Name":
+                        parcels = sortAscending ? parcels.OrderBy(p => p.Name).ToList() : parcels.OrderByDescending(p => p.Name).ToList();
+                        break;
+                    case "SendingTime":
+                        parcels = sortAscending ? parcels.OrderBy(p => p.SendingTime).ToList() : parcels.OrderByDescending(p => p.SendingTime).ToList();
+                        break;
+                    default:
+                        parcels = sortAscending ? parcels.OrderBy(p => p.Id).ToList() : parcels.OrderByDescending(p => p.Id).ToList();
+                        break;
+                }
                 ParcelsListBox.ItemsSource = parcels;
+                
+            } catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при отриманні списку посилок: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
         private void DetailButtonClick(object sender, RoutedEventArgs e)
         {
-            Button button = (Button)sender;
-            Parcel parcel = (Parcel)button.Tag;
-            ShowParcel showParcel = new ShowParcel(parcel);
-            showParcel.Show();
-            Hide();
+            if (ParcelsListBox.SelectedItem is Parcel parcel)
+            {
+                ShowParcel showParcel = new ShowParcel(parcel);
+                showParcel.Show();
+                Hide();
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, оберіть посилку для перегляду деталей.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
+
 
         private void CreateParcelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -55,7 +79,7 @@ namespace Post.Windows
 
         private void UpdateListButton_Click(object sender, RoutedEventArgs e)
         {
-            updateParcels();
+            UpdateParcelsList();
         }
     }
 }
